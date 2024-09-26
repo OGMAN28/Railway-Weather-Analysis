@@ -4,15 +4,22 @@ import os
 
 app = Flask(__name__)
 
-# MongoDB Atlas connection string
-# mongo_uri = os.getenv('MONGODB_URI', 'your_connection_string_here')  # replace with your connection string
-# client = MongoClient(mongo_uri)
-# db = client['your_database_name']  # replace with your database name
+# MongoDB Atlas Connection
+MONGO_URI = os.getenv('MONGODB_URI')
+client = MongoClient(MONGO_URI)
+db = client['weather_info'] 
 
 @app.route('/', methods=['GET'])
 def home():
+    # 
     return jsonify({'message': 'Hello'})
 
+@app.route('/esp32/upload', methods=['POST'])
+def esp32_upload():
+    # Upload the received data to Mongodb Atlas
+    req_data = request.get_json()
+    db.info.insert_one(req_data)
+    return jsonify({'message': 'Upload Successful'})
 
 if __name__ == '__main__':
     app.run(debug=True)
